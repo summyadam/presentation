@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="doc-title">Data Management Transformation</title>
+    <style>
+        /* Import the Poppins font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #4A2A73;
+            --primary-light-color: #6a4a9f; /* Lighter purple for gradient */
+            --secondary-color: #f4f4f9;
+            --text-color: #333;
+            --header-text-color: #ffffff;
+            --slide-transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background-color: var(--secondary-color);
+        }
+
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-light-color));
+            display: flex;
+            justify-content: space-between; /* Aligns children to ends */
+            align-items: center;
+            padding: 0 30px;
+            height: 90px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            width: 64px;
+            height: 64px;
+            background: url('https://014gc.sharepoint.com/sites/82175/_api/siteiconmanager/getsitelogo?type=\'1\'&hash=638889777951821888') no-repeat left center / contain;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .header-text h1 {
+            color: var(--header-text-color);
+            font-size: 1.6em;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        
+        .header-text p {
+            color: var(--header-text-color);
+            font-size: 0.9em;
+            font-weight: 300;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        main {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--slide-transition);
+            transform: translateY(20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .slide-title {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            font-weight: 700;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+        
+        .slide-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            font-size: 1.1em;
+            line-height: 1.7;
+        }
+
+        .slide-content ul { list-style: none; padding-left: 0; }
+        .slide-content li {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%234A2A73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>') no-repeat left center;
+            padding-left: 35px;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 5px solid var(--primary-color);
+        }
+        .card h3 { margin-top: 0; color: var(--primary-color); }
+
+        .slide-intro-content { font-size: 1.2em; line-height: 1.8; max-width: 800px; }
+        
+        .diagram-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .diagram-container img {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .transition-note {
+            font-style: italic;
+            color: #666;
+            margin-top: auto;
+            padding-top: 20px;
+            border-left: 3px solid #ccc;
+            padding-left: 15px;
+        }
+		
+        .thank-you-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .thank-you-content h1 {
+            font-size: 4.5em;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .thank-you-content p {
+            font-size: 2em;
+            color: var(--text-color);
+        }
+
+        footer {
+            padding: 10px;
+            text-align: center;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            z-index: 10;
+        }
+
+        .nav-button {
+            background-color: var(--primary-color);
+            color: var(--header-text-color);
+            border: none;
+            padding: 12px 25px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .nav-button:hover { background-color: #3b205a; }
+
+        #lang-switcher {
+            background-color: transparent;
+            border: 1px solid var(--header-text-color);
+            padding: 8px 16px;
+        }
+        #lang-switcher:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <header>
+            <div class="header-left">
+                <div class="logo-container"></div>
+                <div class="header-text">
+                    <h1>DGPET | TFWPB</h1>
+                    <p id="header-subtitle">Direction des opérations du programme | Program Operations Directorate</p>
+                </div>
+            </div>
+            <button id="lang-switcher" class="nav-button">Français</button>
+        </header>
+
+        <main>
+            <!-- Slide 1: Introduction -->
+            <div id="slide1" class="slide active">
+                <div>
+                    <h1 id="s1-title" class="slide-title"></h1>
+                    <div class="slide-intro-content">
+                        <p id="s1-p1"></p>
+                        <p id="s1-p2"></p>
+                        <p id="s1-p3"></p>
+                    </div>
+                </div>
+                <p id="s1-note" class="transition-note"></p>
+            </div>
+
+            <!-- Slide 2: Current Challenges -->
+            <div id="slide2" class="slide">
+                <div>
+                    <h1 id="s2-title" class="slide-title"></h1>
+                    <div class="slide-content">
+                        <div class="card"><h3 id="s2-card1-h3"></h3><p id="s2-card1-p"></p></div>
+                        <div class="card"><h3 id="s2-card2-h3"></h3><p id="s2-card2-p"></p></div>
+                        <div class="card"><h3 id="s2-card3-h3"></h3><p id="s2-card3-p"></p></div>
+                        <div class="card"><h3 id="s2-card4-h3"></h3><p id="s2-card4-p"></p></div>
+                    </div>
+                </div>
+				<p id="s2-note" class="transition-note"></p>
+            </div>
+
+            <!-- SLIDE 3: Current State Diagram -->
+            <div id="slide3" class="slide">
+                <h1 id="s3-title" class="slide-title"></h1>
+                <div class="diagram-container">
+                    <img src="https://014gc.sharepoint.com/sites/8110938/LMIA%20Data%20Upload/src/img/CurrentState.png" alt="Current State Architecture Diagram">
+                </div>
+            </div>
+
+            <!-- Slide 4: Modernized Solution -->
+            <div id="slide4" class="slide">
+                 <div>
+                    <h1 id="s4-title" class="slide-title"></h1>
+                    <div class="slide-content">
+                        <ul>
+                            <li id="s4-li1"></li>
+                            <li id="s4-li2"></li>
+                            <li id="s4-li3"></li>
+                            <li id="s4-li4"></li>
+                        </ul>
+                    </div>
+                </div>
+				<p id="s4-note" class="transition-note"></p>
+            </div>
+
+            <!-- SLIDE 5: Azure Environment Diagram -->
+            <div id="slide5" class="slide">
+                <h1 id="s5-title" class="slide-title"></h1>
+                <div class="diagram-container">
+                    <img src="https://014gc.sharepoint.com/sites/8110938/LMIA%20Data%20Upload/src/img/FutureState.png" alt="New Azure Environment Architecture Diagram">
+                </div>
+            </div>
+
+            <!-- Slide 6: Business Impact -->
+            <div id="slide6" class="slide">
+                 <div>
+                    <h1 id="s6-title" class="slide-title"></h1>
+                    <div class="slide-content">
+                        <div class="card"><h3 id="s6-card1-h3"></h3><p id="s6-card1-p"></p></div>
+                        <div class="card"><h3 id="s6-card2-h3"></h3><p id="s6-card2-p"></p></div>
+                        <div class="card"><h3 id="s6-card3-h3"></h3><p id="s6-card3-p"></p></div>
+                        <div class="card"><h3 id="s6-card4-h3"></h3><p id="s6-card4-p"></p></div>
+                    </div>
+                </div>
+				 <p id="s6-note" class="transition-note"></p>
+            </div>
+
+			<!-- Slide 7: Phase 2 -->
+            <div id="slide7" class="slide">
+                 <div>
+                    <h1 id="s7-title" class="slide-title"></h1>
+					<p><strong id="s7-p1-strong"></strong></p>
+					<p><strong id="s7-p2-strong"></strong></p>
+                    <div class="slide-content">
+                        <ul>
+                            <li id="s7-li1"></li>
+                            <li id="s7-li2"></li>
+                            <li id="s7-li3"></li>
+                        </ul>
+                    </div>
+					<p><strong id="s7-p3-strong"></strong></p>
+					<div class="slide-content">
+                        <ul>
+                            <li id="s7-li4"></li>
+                            <li id="s7-li5"></li>
+                            <li id="s7-li6"></li>
+                        </ul>
+                    </div>
+					<p><strong id="s7-p4-strong"></strong></p>
+                </div>
+            </div>
+			
+			<!-- Slide 8: Thank you -->
+            <div id="slide8" class="slide thank-you-slide">
+                <div class="thank-you-content">
+                    <h1 id="s8-title"></h1>
+                    <p id="s8-p"></p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="navigation">
+                <button id="prev-btn" class="nav-button" onclick="changeSlide(-1)"></button>
+                <span id="slide-counter">1 / 8</span>
+                <button id="next-btn" class="nav-button" onclick="changeSlide(1)"></button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const slideCounter = document.getElementById('slide-counter');
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[n - 1].classList.add('active');
+            slideCounter.textContent = `${n} / ${slides.length}`;
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            if (currentSlide > slides.length) {
+                currentSlide = 1;
+            }
+            if (currentSlide < 1) {
+                currentSlide = slides.length;
+            }
+            showSlide(currentSlide);
+        }
+
+        // --- Language Switching Logic ---
+
+        let currentLang = 'en';
+        const langSwitcherBtn = document.getElementById('lang-switcher');
+
+        const translations = {
+            en: {
+                'doc-title': 'Data Management Transformation',
+                's1-title': 'Data Management Transformation',
+                's1-p1': 'Welcome! This presentation provides an overview of our Data Management Transformation initiative—a key project to modernize how we manage, process, and deliver data across our operations.',
+                's1-p2': 'We have just completed <strong>Phase One</strong> of the migration. We will explore what we’ve achieved and outline the roadmap for Phase Two.',
+                's1-p3': 'Following my overview, Mohamed will provide a live demonstration in Azure Synapse.',
+                's1-note': '“Let’s begin by looking at where we started — some of the challenges that made this transformation necessary.”',
+                's2-title': 'Current Challenges',
+                's2-card1-h3': 'Performance Bottlenecks',
+                's2-card1-p': 'Our processes is heavily reliant on large SAS files, leading to significant delays in data processing.',
+                's2-card2-h3': 'System Instability',
+                's2-card2-p': 'We experience frequent server crashes, with system uptime struggling at an unacceptable <strong>~60-80%</strong>. This level of instability directly translates to missed deadlines, delayed reports, and an inability to provide timely data for decision-making.',
+                's2-card3-h3': 'Single Point of Failure',
+                's2-card3-p': 'A <strong> Major</strong> risk in our current SAS process is what we call a single point of failure. It relies on a single, massive file to generate all of our reports. If that initial file fails, the entire reporting chain breaks down, and nothing gets produced.',
+                's2-card4-h3': 'Manual Workflows',
+                's2-card4-p': 'Heavy manual intervention is required for data handling, leading to lost productivity and risk of error.',
+                's2-note': '“When SAS server crashes, our team has to react—find the problem, fix it, and restart the system. This process takes time.”',
+                's3-title': 'Current Architecture',
+                's4-title': 'A Modernized Solution',
+                's4-li1': '<strong>Core Technology Shift:</strong> Migrated to a scalable, cloud-native stack: <strong>Azure Synapse Analytics</strong>.',
+                's4-li2': '<strong>Optimized Data Handling:</strong> Replaced legacy SAS files with highly efficient <strong>Parquet files</strong>.',
+                's4-li3': '<strong>Unified Data Ecosystem:</strong> Integrated different sources into a centralized and accessible <strong>Data Lake</strong>.',
+                's4-li4': '<strong>Automated & Scalable Pipelines:</strong> Established a robust foundation for automation and on-demand scaling.',
+                's4-note': '“Parquet files allow our reporting tools to cherry-pick exactly the data they need and nothing more. This precision makes the files much smaller and the data processing faster.”',
+                's5-title': 'The New Architecture: A Modern Data Platform',
+                's6-title': 'Business Impact',
+                's6-card1-h3': 'Unprecedented Reliability',
+                's6-card1-p': 'System uptime will soar from <strong>60% to over 99.5%</strong>, ensuring our data services are consistently available.',
+                's6-card2-h3': 'Accelerated Insights',
+                's6-card2-p': 'Our reports will no longer be constrained by slow, cumbersome Excel connections. By delivering data in a high-performance format, our Power BI dashboards will now be significantly faster and more interactive.',
+                's6-card3-h3': 'Enhanced Efficiency',
+                's6-card3-p': 'Workflow automation has significantly cut down manual processing time, freeing up our teams for high-value tasks.',
+                's6-card4-h3': 'Future-Ready Foundation',
+                's6-card4-p': 'Our new platform provides a scalable foundation to support future data initiatives and advanced analytics.',
+                's6-note': '“Azure Synapse Analytics, Microsoft\'s official Service Level Agreement (SLA) is 99.9% uptime.”',
+                's7-title': "What's next?",
+                's7-p1-strong': 'Phase 2:',
+                's7-p2-strong': 'Key Activities:',
+                's7-li1': '<strong>Centralize Data:</strong> We will build a "single source of truth" using the <strong>Azure Synapse Data Warehouse</strong>. This ensures that every report, pulls from the exact same verified, consistent, and secure data.',
+                's7-li2': '<strong>Modernize All Reports:</strong> Every existing report and dashboard will be rebuilt and optimized for performance and reliability on the new platform.',
+                's7-li3': '<strong>Decommission Legacy Systems:</strong> Upon successful migration, we will methodically retire the old, fragile SAS-based reporting process, eliminating technical debt and reducing maintenance costs.',
+                's7-p3-strong': 'Expected Outcomes:',
+                's7-li4': '<strong>Universal Consistency:</strong> Eradicate data discrepancies between reports.',
+                's7-li5': '<strong>Enhanced Performance:</strong> Deliver faster, more reliable insights to all users.',
+                's7-li6': '<strong>Simplified Governance & Security:</strong> Manage and secure our data from a single, robust point of control.',
+                's8-title': 'Thank You',
+                's8-p': 'Questions?',
+                'prev-btn': 'Previous',
+                'next-btn': 'Next',
+                'lang-switcher': 'Français'
+            },
+            fr: {
+                'doc-title': 'Transformation de la gestion des données',
+                's1-title': 'Transformation de la gestion des données',
+                's1-p1': 'Bienvenue ! Cette présentation offre un aperçu de notre initiative de Transformation de la Gestion des Données — un projet clé pour moderniser la façon dont nous gérons, traitons et livrons les données à travers nos opérations.',
+                's1-p2': 'Nous venons de terminer la <strong>Phase Un</strong> de la migration. Nous explorerons ce que nous avons accompli et décrirons la feuille de route pour la Phase Deux.',
+                's1-p3': 'Après mon aperçu, Mohamed fera une démonstration en direct dans Azure Synapse.',
+                's1-note': '« Commençons par examiner notre point de départ — certains des défis qui ont rendu cette transformation nécessaire. »',
+                's2-title': 'Les défis actuels',
+                's2-card1-h3': 'Goulots d\'étranglement de performance',
+                's2-card1-p': 'Nos processus dépendent fortement de gros fichiers SAS, ce qui entraîne des retards importants dans le traitement des données.',
+                's2-card2-h3': 'Instabilité du système',
+                's2-card2-p': 'Nous subissons des pannes de serveur fréquentes, avec une disponibilité du système peinant à un niveau inacceptable de <strong>~60-80 %</strong>. Ce niveau d\'instabilité se traduit directement par des échéances manquées, des rapports retardés et une incapacité à fournir des données opportunes pour la prise de décision.',
+                's2-card3-h3': 'Point de défaillance unique',
+                's2-card3-p': 'Un risque <strong>majeur</strong> dans notre processus SAS actuel est ce que nous appelons un point de défaillance unique. Il repose sur un seul fichier massif pour générer tous nos rapports. Si ce fichier initial échoue, toute la chaîne de rapports est rompue et rien n\'est produit.',
+                's2-card4-h3': 'Flux de travail manuels',
+                's2-card4-p': 'Une intervention manuelle importante est nécessaire pour la manipulation des données, ce qui entraîne une perte de productivité et un risque d\'erreur.',
+                's2-note': '« Lorsque le serveur SAS tombe en panne, notre équipe doit réagir — trouver le problème, le résoudre et redémarrer le système. Ce processus prend du temps. »',
+                's3-title': 'Architecture actuelle',
+                's4-title': 'Une solution modernisée',
+                's4-li1': '<strong>Changement technologique de base :</strong> Migration vers une pile infonuagique évolutive : <strong>Azure Synapse Analytics</strong>.',
+                's4-li2': '<strong>Gestion optimisée des données :</strong> Remplacement des anciens fichiers SAS par des <strong>fichiers Parquet</strong> très efficaces.',
+                's4-li3': '<strong>Écosystème de données unifié :</strong> Intégration de différentes sources dans un <strong>lac de données (Data Lake)</strong> centralisé et accessible.',
+                's4-li4': '<strong>Pipelines automatisés et évolutifs :</strong> Mise en place d\'une base solide pour l\'automatisation et la mise à l\'échelle sur demande.',
+                's4-note': '« Les fichiers Parquet permettent à nos outils de rapportage de sélectionner précisément les données dont ils ont besoin, et rien de plus. Cette précision rend les fichiers beaucoup plus petits et le traitement des données plus rapide. »',
+                's5-title': 'La nouvelle architecture : Une plateforme de données moderne',
+                's6-title': 'Impact sur l\'entreprise',
+                's6-card1-h3': 'Fiabilité sans précédent',
+                's6-card1-p': 'La disponibilité du système passera de <strong>60 % à plus de 99,5 %</strong>, garantissant que nos services de données sont constamment disponibles.',
+                's6-card2-h3': 'Informations accélérées',
+                's6-card2-p': 'Nos rapports ne seront plus limités par des connexions Excel lentes et lourdes. En fournissant des données dans un format haute performance, nos tableaux de bord Power BI seront désormais beaucoup plus rapides et interactifs.',
+                's6-card3-h3': 'Efficacité améliorée',
+                's6-card3-p': 'L\'automatisation des flux de travail a considérablement réduit le temps de traitement manuel, libérant ainsi nos équipes pour des tâches à plus grande valeur ajoutée.',
+                's6-card4-h3': 'Fondation prête pour l\'avenir',
+                's6-card4-p': 'Notre nouvelle plateforme offre une base évolutive pour soutenir les futures initiatives de données et les analyses avancées.',
+                's6-note': '« Pour Azure Synapse Analytics, l\'accord de niveau de service (SLA) officiel de Microsoft est de 99,9 % de disponibilité. »',
+                's7-title': 'Prochaines étapes ?',
+                's7-p1-strong': 'Phase 2 :',
+                's7-p2-strong': 'Activités clés :',
+                's7-li1': '<strong>Centraliser les données :</strong> Nous construirons une « source unique de vérité » en utilisant l\'<strong>entrepôt de données Azure Synapse</strong>. Cela garantit que chaque rapport extrait des données vérifiées, cohérentes et sécurisées, provenant exactement de la même source.',
+                's7-li2': '<strong>Moderniser tous les rapports :</strong> Chaque rapport et tableau de bord existant sera reconstruit et optimisé pour la performance et la fiabilité sur la nouvelle plateforme.',
+                's7-li3': '<strong>Mettre hors service les anciens systèmes :</strong> Après une migration réussie, nous retirerons méthodiquement l\'ancien processus de rapportage fragile basé sur SAS, éliminant ainsi la dette technique et réduisant les coûts de maintenance.',
+                's7-p3-strong': 'Résultats attendus :',
+                's7-li4': '<strong>Cohérence universelle :</strong> Éradiquer les divergences de données entre les rapports.',
+                's7-li5': '<strong>Performance améliorée :</strong> Fournir des informations plus rapides et plus fiables à tous les utilisateurs.',
+                's7-li6': '<strong>Gouvernance et sécurité simplifiées :</strong> Gérer et sécuriser nos données à partir d\'un point de contrôle unique et robuste.',
+                's8-title': 'Merci',
+                's8-p': 'Des questions ?',
+                'prev-btn': 'Précédent',
+                'next-btn': 'Suivant',
+                'lang-switcher': 'English'
+            }
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            const translationSet = translations[lang];
+            for (const key in translationSet) {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.innerHTML = translationSet[key];
+                }
+            }
+        }
+
+        langSwitcherBtn.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'fr' : 'en';
+            setLanguage(currentLang);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(currentSlide);
+            setLanguage(currentLang); // Set initial language
+        });
+    </script>
+
+</body>
+</html>
