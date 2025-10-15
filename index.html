@@ -488,6 +488,29 @@
             setLanguage(currentLang); // Set initial language
         });
     </script>
+	<script>
+        // --- Simple Password Protection Script ---
+
+        // 1. SET YOUR PASSWORD HERE
+        const correctPassword = "UoAxYs6jPjcFZhHi35GXJPfGAkppLCXw"; 
+
+        // 2. This function runs when the page loads
+        (function protectPage() {
+            // Prompt the user to enter a password
+            let userPassword = prompt("Please enter the password to view this presentation:", "");
+
+            // 3. Check if the entered password is correct
+            if (userPassword !== correctPassword) {
+                // If the password is wrong, hide the content and show an error message
+                document.body.innerHTML = `
+                    <div style="text-align: center; padding-top: 50px; font-family: sans-serif;">
+                        <h1>Access Denied</h1>
+                        <p>The password you entered is incorrect. Please refresh the page to try again.</p>
+                    </div>`;
+            }
+            // If the password is correct, the script does nothing, and the page remains visible.
+        })();
+    </script>
 
 </body>
 </html>
